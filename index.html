@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snabbåtkomst - Jobb</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+
+    <h1>Snabbåtkomst</h1>
+
+    <div class="section" onclick="toggleDropdown('bmi')">
+      <h2>BMI Uträknare</h2>
+      <div class="dropdown" id="bmi">
+        <!-- Här kan vi lägga in en riktig kalkylator senare -->
+        <p>Formel: vikt (kg) / längd (m)²</p>
+        <input type="number" id="weight" placeholder="Vikt i kg">
+        <input type="number" id="height" placeholder="Längd i cm">
+        <button onclick="calculateBMI()">Beräkna BMI</button>
+        <p id="bmiResult"></p>
+      </div>
+    </div>
+
+    <div class="section" onclick="toggleDropdown('norton')">
+      <h2>Riskbedömning (Norton)</h2>
+      <div class="dropdown" id="norton">
+        <p>Här kan du fylla i Norton-bedömning. (Ej klar ännu)</p>
+      </div>
+    </div>
+
+    <div class="section" onclick="toggleDropdown('pm')">
+      <h2>PM & Rutiner</h2>
+      <div class="dropdown" id="pm">
+        <ul>
+          <li>Pre-op Checklista</li>
+          <li>Post-op Rutiner</li>
+          <li>Akuta åtgärder</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleDropdown(id) {
+      const element = document.getElementById(id);
+      element.classList.toggle("show");
+    }
+
+    function calculateBMI() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value) / 100;
+      if (!weight || !height) {
+        document.getElementById("bmiResult").textContent = "Fyll i vikt och längd!";
+        return;
+      }
+      const bmi = weight / (height * height);
+      document.getElementById("bmiResult").textContent = `Ditt BMI är: ${bmi.toFixed(1)}`;
+    }
+  </script>
+</body>
+</html>
