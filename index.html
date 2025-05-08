@@ -1,104 +1,90 @@
+
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Snabbåtkomst Vårdverktyg</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patientmodul</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
+    <h1>Patientvårdshjälp</h1>
 
-    <h1>Snabbåtkomst</h1>
+    <section id="norton-form">
+        <h2>Modifierad Norton-skala</h2>
+        <form id="norton">
+            <label>Fysisk kondition:
+                <select name="physicalCondition">
+                    <option value="1">Mycket dålig (1)</option>
+                    <option value="2">Dålig (2)</option>
+                    <option value="3">Måttlig (3)</option>
+                    <option value="4">God (4)</option>
+                </select>
+            </label>
+            <!-- Lägg till fler kriterier här vid behov -->
+            <button type="submit">Beräkna poäng</button>
+        </form>
+        <p id="norton-result"></p>
+    </section>
 
-    <!-- Riskbedömningar -->
-    <div class="category" onclick="toggleContent('risk')">Riskbedömningar</div>
-    <div id="risk" class="content">
-      <form id="nortonForm">
-        <h3>Modifierad Norton</h3>
-        <label><input type="checkbox" name="norton" value="4"> Rörlighet: Går själv</label><br>
-        <label><input type="checkbox" name="norton" value="3"> Rörlighet: Behöver hjälp</label><br>
-        <label><input type="checkbox" name="norton" value="2"> Rörlighet: Begränsad</label><br>
-        <label><input type="checkbox" name="norton" value="1"> Rörlighet: Immobiliserad</label><br>
-        <button type="button" onclick="calculateNorton()">Beräkna Norton</button>
-        <p id="nortonResult"></p>
-      </form>
-    </div>
+    <section id="dropp-calc">
+        <h2>Droppkalkylator</h2>
+        <form id="dropp-form">
+            <label>Volym (ml):
+                <input type="number" name="volume" required>
+            </label>
+            <label>Tid (timmar):
+                <input type="number" name="time" required>
+            </label>
+            <label>Droppfaktor (droppar/ml):
+                <input type="number" name="factor" value="20" required>
+            </label>
+            <button type="submit">Beräkna</button>
+        </form>
+        <p id="dropp-result"></p>
+    </section>
 
-    <!-- BMI -->
-    <div class="category" onclick="toggleContent('bmi')">BMI Uträknare</div>
-    <div id="bmi" class="content">
-      <label>Vikt (kg): <input type="number" id="weight"></label><br>
-      <label>Längd (cm): <input type="number" id="height"></label><br>
-      <button onclick="calculateBMI()">Beräkna BMI</button>
-      <p id="bmiResult"></p>
-    </div>
+    <section id="urine-calc">
+        <h2>Urinproduktionsberäkning</h2>
+        <form id="urine-form">
+            <label>Vikt (kg):
+                <input type="number" name="weight" required>
+            </label>
+            <label>Målproduktion (ml/kg/h):
+                <input type="number" name="target" value="0.5" required>
+            </label>
+            <button type="submit">Beräkna</button>
+        </form>
+        <p id="urine-result"></p>
+    </section>
 
-    <!-- PM -->
-    <div class="category" onclick="toggleContent('pm')">PM</div>
-    <div id="pm" class="content">
-      <ul>
-        <li><a href="#">Pankreatit PM (placeholder)</a></li>
-        <li><a href="#">Pre-OP Checklista (placeholder)</a></li>
-      </ul>
-    </div>
+    <section id="patient-module">
+        <h2>Patientmodul</h2>
+        <form id="patient-form">
+            <label>Sängnummer:
+                <input type="text" name="bed" required>
+            </label>
+            <label>Namn:
+                <input type="text" name="name" required>
+            </label>
+            <label>Situation:
+                <textarea name="situation"></textarea>
+            </label>
+            <label>Bakgrund:
+                <textarea name="background"></textarea>
+            </label>
+            <label>In/ut-farter:
+                <textarea name="lines"></textarea>
+            </label>
+            <label>Egen checklista (komma-separerad):
+                <input type="text" name="checklist">
+            </label>
+            <button type="submit">Spara patient</button>
+        </form>
+        <div id="patient-list"></div>
+        <button onclick="clearPatients()">Radera all patientdata</button>
+    </section>
 
-    <!-- Patientmodul -->
-    <div class="category" onclick="toggleContent('patient')">Patientmodul</div>
-    <div id="patient" class="content">
-      <textarea id="patientNotes" placeholder="Skriv info om patienter här..." rows="8"></textarea><br>
-      <button onclick="savePatientNotes()">Spara anteckning</button>
-      <button onclick="clearPatientNotes()">Rensa nu</button>
-    </div>
-
-  </div>
-
-  <script>
-    // Toggle för dropdown
-    function toggleContent(id) {
-      const content = document.getElementById(id);
-      content.classList.toggle("show");
-    }
-
-    // Norton kalkylator
-    function calculateNorton() {
-      const checkboxes = document.querySelectorAll('#nortonForm input[type="checkbox"]:checked');
-      let score = 0;
-      checkboxes.forEach(cb => score += parseInt(cb.value));
-      document.getElementById("nortonResult").innerText = "Poäng: " + score;
-    }
-
-    // BMI kalkylator
-    function calculateBMI() {
-      const weight = parseFloat(document.getElementById("weight").value);
-      const height = parseFloat(document.getElementById("height").value) / 100;
-      if (weight > 0 && height > 0) {
-        const bmi = (weight / (height * height)).toFixed(1);
-        document.getElementById("bmiResult").innerText = "Ditt BMI är: " + bmi;
-      }
-    }
-
-    // Patientmodul: Local Storage
-    const notesBox = document.getElementById("patientNotes");
-    const saved = localStorage.getItem("patientNotesData");
-    const timestamp = localStorage.getItem("patientNotesTime");
-
-    if (saved && timestamp && Date.now() - parseInt(timestamp) < 86400000) {
-      notesBox.value = saved;
-    }
-
-    function savePatientNotes() {
-      localStorage.setItem("patientNotesData", notesBox.value);
-      localStorage.setItem("patientNotesTime", Date.now().toString());
-      alert("Sparat!");
-    }
-
-    function clearPatientNotes() {
-      localStorage.removeItem("patientNotesData");
-      localStorage.removeItem("patientNotesTime");
-      notesBox.value = "";
-      alert("Rensat!");
-    }
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>

@@ -1,73 +1,43 @@
-/* Baslayout */
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-  font-family: system-ui, sans-serif;
-}
 
-.container {
-  width: 100%;
-  padding: 0;
+body {
+    font-family: Arial, sans-serif;
+    margin: 2rem;
+    background-color: #f9f9f9;
 }
 
 h1 {
-  text-align: center;
-  padding: 1rem;
-  font-size: 1.8rem;
+    text-align: center;
 }
 
-.category {
-  background-color: #2a2a2a;
-  color: #ffffff;
-  padding: 1rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  border-top: 1px solid #3a3a3a;
-  transition: background 0.2s;
+section {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.category:hover {
-  background-color: #333;
+form label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: bold;
 }
 
-.content {
-  display: none;
-  padding: 1rem;
-  background-color: #252525;
-  border-bottom: 1px solid #3a3a3a;
-}
-
-.content.show {
-  display: block;
-}
-
-input, textarea, button {
-  width: 100%;
-  margin: 0.5rem 0;
-  padding: 0.7rem;
-  border-radius: 4px;
-  border: none;
-  font-size: 1rem;
-}
-
-input, textarea {
-  background-color: #333;
-  color: #fff;
+input, select, textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 button {
-  background-color: #4caf50;
-  color: white;
-  font-weight: bold;
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+    background-color: #007ACC;
+    color: white;
+    border: none;
+    border-radius: 4px;
 }
 
-a {
-  color: #66ccff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
+button:hover {
+    background-color: #005F99;
 }
