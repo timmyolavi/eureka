@@ -1,109 +1,104 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jobbverktyg</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snabbåtkomst Vårdverktyg</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Jobbverktyg</h1>
 
-    <div class="category" onclick="toggleContent('riskbedomningar')">Riskbedömningar</div>
-    <div id="riskbedomningar" class="content">
-      <label><input type="checkbox" class="norton" value="1"> Modifierad Norton (1p)</label><br>
-      <label><input type="checkbox" class="norton" value="2"> DFRI (2p)</label><br>
-      <label><input type="checkbox" class="norton" value="3"> MNA (3p)</label><br>
-      <label><input type="checkbox" class="norton" value="4"> ROAG-J (4p)</label><br>
-      <p>Poäng: <span id="nortonTotal">0</span></p>
+    <h1>Snabbåtkomst</h1>
+
+    <!-- Riskbedömningar -->
+    <div class="category" onclick="toggleContent('risk')">Riskbedömningar</div>
+    <div id="risk" class="content">
+      <form id="nortonForm">
+        <h3>Modifierad Norton</h3>
+        <label><input type="checkbox" name="norton" value="4"> Rörlighet: Går själv</label><br>
+        <label><input type="checkbox" name="norton" value="3"> Rörlighet: Behöver hjälp</label><br>
+        <label><input type="checkbox" name="norton" value="2"> Rörlighet: Begränsad</label><br>
+        <label><input type="checkbox" name="norton" value="1"> Rörlighet: Immobiliserad</label><br>
+        <button type="button" onclick="calculateNorton()">Beräkna Norton</button>
+        <p id="nortonResult"></p>
+      </form>
     </div>
 
-    <div class="category" onclick="toggleContent('bmi')">BMI</div>
+    <!-- BMI -->
+    <div class="category" onclick="toggleContent('bmi')">BMI Uträknare</div>
     <div id="bmi" class="content">
       <label>Vikt (kg): <input type="number" id="weight"></label><br>
       <label>Längd (cm): <input type="number" id="height"></label><br>
       <button onclick="calculateBMI()">Beräkna BMI</button>
-      <p>BMI: <span id="bmiResult"></span></p>
+      <p id="bmiResult"></p>
     </div>
 
+    <!-- PM -->
     <div class="category" onclick="toggleContent('pm')">PM</div>
     <div id="pm" class="content">
       <ul>
-        <li>Pankreatit PM Region Sörmland</li>
-        <li>Pre-OP Checklista Region Sörmland</li>
-        <li>Placeholder PM</li>
+        <li><a href="#">Pankreatit PM (placeholder)</a></li>
+        <li><a href="#">Pre-OP Checklista (placeholder)</a></li>
       </ul>
     </div>
 
-    <div class="category" onclick="toggleContent('patientmodul')">Patientmodul</div>
-    <div id="patientmodul" class="content">
-      <label>Sängnummer: <input type="text" id="bedNumber"></label><br>
-      <label>Namn: <input type="text" id="patientName"></label><br>
-      <label>Situation: <textarea id="situation"></textarea></label><br>
-      <label>Bakgrund: <textarea id="background"></textarea></label><br>
-      <label>In/Ut-farter: <textarea id="lines"></textarea></label><br>
-      <label>Checklista: <textarea id="checklist"></textarea></label><br>
-      <button onclick="savePatientData()">Spara</button>
-      <button onclick="clearPatientData()">Rensa data</button>
-      <p>Data rensas automatiskt efter 24h.</p>
+    <!-- Patientmodul -->
+    <div class="category" onclick="toggleContent('patient')">Patientmodul</div>
+    <div id="patient" class="content">
+      <textarea id="patientNotes" placeholder="Skriv info om patienter här..." rows="8"></textarea><br>
+      <button onclick="savePatientNotes()">Spara anteckning</button>
+      <button onclick="clearPatientNotes()">Rensa nu</button>
     </div>
+
   </div>
 
   <script>
+    // Toggle för dropdown
     function toggleContent(id) {
-      const el = document.getElementById(id);
-      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+      const content = document.getElementById(id);
+      content.classList.toggle("show");
     }
 
-    document.querySelectorAll('.norton').forEach(input => {
-      input.addEventListener('change', () => {
-        const total = Array.from(document.querySelectorAll('.norton'))
-          .filter(i => i.checked)
-          .reduce((sum, i) => sum + Number(i.value), 0);
-        document.getElementById('nortonTotal').innerText = total;
-      });
-    });
+    // Norton kalkylator
+    function calculateNorton() {
+      const checkboxes = document.querySelectorAll('#nortonForm input[type="checkbox"]:checked');
+      let score = 0;
+      checkboxes.forEach(cb => score += parseInt(cb.value));
+      document.getElementById("nortonResult").innerText = "Poäng: " + score;
+    }
 
+    // BMI kalkylator
     function calculateBMI() {
-      const weight = parseFloat(document.getElementById('weight').value);
-      const height = parseFloat(document.getElementById('height').value) / 100;
-      if (!weight || !height) return;
-      const bmi = (weight / (height * height)).toFixed(1);
-      document.getElementById('bmiResult').innerText = bmi;
-    }
-
-    function savePatientData() {
-      const data = {
-        bedNumber: document.getElementById('bedNumber').value,
-        patientName: document.getElementById('patientName').value,
-        situation: document.getElementById('situation').value,
-        background: document.getElementById('background').value,
-        lines: document.getElementById('lines').value,
-        checklist: document.getElementById('checklist').value,
-        timestamp: new Date().getTime()
-      };
-      localStorage.setItem('patientData', JSON.stringify(data));
-    }
-
-    function clearPatientData() {
-      localStorage.removeItem('patientData');
-      location.reload();
-    }
-
-    window.onload = () => {
-      const saved = JSON.parse(localStorage.getItem('patientData'));
-      if (saved && (new Date().getTime() - saved.timestamp) < 86400000) {
-        document.getElementById('bedNumber').value = saved.bedNumber;
-        document.getElementById('patientName').value = saved.patientName;
-        document.getElementById('situation').value = saved.situation;
-        document.getElementById('background').value = saved.background;
-        document.getElementById('lines').value = saved.lines;
-        document.getElementById('checklist').value = saved.checklist;
-      } else {
-        clearPatientData();
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value) / 100;
+      if (weight > 0 && height > 0) {
+        const bmi = (weight / (height * height)).toFixed(1);
+        document.getElementById("bmiResult").innerText = "Ditt BMI är: " + bmi;
       }
-    };
+    }
+
+    // Patientmodul: Local Storage
+    const notesBox = document.getElementById("patientNotes");
+    const saved = localStorage.getItem("patientNotesData");
+    const timestamp = localStorage.getItem("patientNotesTime");
+
+    if (saved && timestamp && Date.now() - parseInt(timestamp) < 86400000) {
+      notesBox.value = saved;
+    }
+
+    function savePatientNotes() {
+      localStorage.setItem("patientNotesData", notesBox.value);
+      localStorage.setItem("patientNotesTime", Date.now().toString());
+      alert("Sparat!");
+    }
+
+    function clearPatientNotes() {
+      localStorage.removeItem("patientNotesData");
+      localStorage.removeItem("patientNotesTime");
+      notesBox.value = "";
+      alert("Rensat!");
+    }
   </script>
 </body>
 </html>
