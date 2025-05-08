@@ -1,64 +1,109 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Snabbåtkomst - Jobb</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jobbverktyg</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
+    <h1>Jobbverktyg</h1>
 
-    <h1>Snabbåtkomst</h1>
-
-    <div class="section" onclick="toggleDropdown('bmi')">
-      <h2>BMI Uträknare</h2>
-      <div class="dropdown" id="bmi">
-        <!-- Här kan vi lägga in en riktig kalkylator senare -->
-        <p>Formel: vikt (kg) / längd (m)²</p>
-        <input type="number" id="weight" placeholder="Vikt i kg">
-        <input type="number" id="height" placeholder="Längd i cm">
-        <button onclick="calculateBMI()">Beräkna BMI</button>
-        <p id="bmiResult"></p>
-      </div>
+    <div class="category" onclick="toggleContent('riskbedomningar')">Riskbedömningar</div>
+    <div id="riskbedomningar" class="content">
+      <label><input type="checkbox" class="norton" value="1"> Modifierad Norton (1p)</label><br>
+      <label><input type="checkbox" class="norton" value="2"> DFRI (2p)</label><br>
+      <label><input type="checkbox" class="norton" value="3"> MNA (3p)</label><br>
+      <label><input type="checkbox" class="norton" value="4"> ROAG-J (4p)</label><br>
+      <p>Poäng: <span id="nortonTotal">0</span></p>
     </div>
 
-    <div class="section" onclick="toggleDropdown('norton')">
-      <h2>Riskbedömning (Norton)</h2>
-      <div class="dropdown" id="norton">
-        <p>Här kan du fylla i Norton-bedömning. (Ej klar ännu)</p>
-      </div>
+    <div class="category" onclick="toggleContent('bmi')">BMI</div>
+    <div id="bmi" class="content">
+      <label>Vikt (kg): <input type="number" id="weight"></label><br>
+      <label>Längd (cm): <input type="number" id="height"></label><br>
+      <button onclick="calculateBMI()">Beräkna BMI</button>
+      <p>BMI: <span id="bmiResult"></span></p>
     </div>
 
-    <div class="section" onclick="toggleDropdown('pm')">
-      <h2>PM & Rutiner</h2>
-      <div class="dropdown" id="pm">
-        <ul>
-          <li>Pre-op Checklista</li>
-          <li>Post-op Rutiner</li>
-          <li>Akuta åtgärder</li>
-        </ul>
-      </div>
+    <div class="category" onclick="toggleContent('pm')">PM</div>
+    <div id="pm" class="content">
+      <ul>
+        <li>Pankreatit PM Region Sörmland</li>
+        <li>Pre-OP Checklista Region Sörmland</li>
+        <li>Placeholder PM</li>
+      </ul>
     </div>
 
+    <div class="category" onclick="toggleContent('patientmodul')">Patientmodul</div>
+    <div id="patientmodul" class="content">
+      <label>Sängnummer: <input type="text" id="bedNumber"></label><br>
+      <label>Namn: <input type="text" id="patientName"></label><br>
+      <label>Situation: <textarea id="situation"></textarea></label><br>
+      <label>Bakgrund: <textarea id="background"></textarea></label><br>
+      <label>In/Ut-farter: <textarea id="lines"></textarea></label><br>
+      <label>Checklista: <textarea id="checklist"></textarea></label><br>
+      <button onclick="savePatientData()">Spara</button>
+      <button onclick="clearPatientData()">Rensa data</button>
+      <p>Data rensas automatiskt efter 24h.</p>
+    </div>
   </div>
 
   <script>
-    function toggleDropdown(id) {
-      const element = document.getElementById(id);
-      element.classList.toggle("show");
+    function toggleContent(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 
+    document.querySelectorAll('.norton').forEach(input => {
+      input.addEventListener('change', () => {
+        const total = Array.from(document.querySelectorAll('.norton'))
+          .filter(i => i.checked)
+          .reduce((sum, i) => sum + Number(i.value), 0);
+        document.getElementById('nortonTotal').innerText = total;
+      });
+    });
+
     function calculateBMI() {
-      const weight = parseFloat(document.getElementById("weight").value);
-      const height = parseFloat(document.getElementById("height").value) / 100;
-      if (!weight || !height) {
-        document.getElementById("bmiResult").textContent = "Fyll i vikt och längd!";
-        return;
-      }
-      const bmi = weight / (height * height);
-      document.getElementById("bmiResult").textContent = `Ditt BMI är: ${bmi.toFixed(1)}`;
+      const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value) / 100;
+      if (!weight || !height) return;
+      const bmi = (weight / (height * height)).toFixed(1);
+      document.getElementById('bmiResult').innerText = bmi;
     }
+
+    function savePatientData() {
+      const data = {
+        bedNumber: document.getElementById('bedNumber').value,
+        patientName: document.getElementById('patientName').value,
+        situation: document.getElementById('situation').value,
+        background: document.getElementById('background').value,
+        lines: document.getElementById('lines').value,
+        checklist: document.getElementById('checklist').value,
+        timestamp: new Date().getTime()
+      };
+      localStorage.setItem('patientData', JSON.stringify(data));
+    }
+
+    function clearPatientData() {
+      localStorage.removeItem('patientData');
+      location.reload();
+    }
+
+    window.onload = () => {
+      const saved = JSON.parse(localStorage.getItem('patientData'));
+      if (saved && (new Date().getTime() - saved.timestamp) < 86400000) {
+        document.getElementById('bedNumber').value = saved.bedNumber;
+        document.getElementById('patientName').value = saved.patientName;
+        document.getElementById('situation').value = saved.situation;
+        document.getElementById('background').value = saved.background;
+        document.getElementById('lines').value = saved.lines;
+        document.getElementById('checklist').value = saved.checklist;
+      } else {
+        clearPatientData();
+      }
+    };
   </script>
 </body>
 </html>
